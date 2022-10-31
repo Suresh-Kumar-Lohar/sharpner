@@ -116,10 +116,14 @@ printCreatePost()
 // 		setTimeout(() => resolve('coke'), 3000);
 //   });
 
+// const getColdDrinks = new Promise((resolve, reject) => {
+//   setTimeout(() => resolve('cold drinks'), 3000)
+// })
+
 //   let ticket = await person3PromiseToShowTicketWhenWifeArrives;
 
 //     let [ popcorn, candy, coke ] =
-//     await Promise.all([ getPopcorn, getCandy, getCoke  ]);
+//     await Promise.all([ getPopcorn, getColdDrinks, getCandy, getCoke  ]);
 
 //     console.log(`got ${popcorn}, ${candy}, ${coke}`);
 
