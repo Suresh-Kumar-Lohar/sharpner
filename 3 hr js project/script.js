@@ -4,8 +4,6 @@ const text3 = document.getElementById('text3')
 const submit = document.getElementById('submit')
 const itemList = document.getElementById('items')
 
-retrieveData()
-
 submit.addEventListener('click', submitHandler)
 
 function submitHandler(e) {
@@ -17,8 +15,25 @@ function submitHandler(e) {
     description: description,
     category: category,
   }
-  localStorage.setItem(`${description}`, JSON.stringify(userDetails))
-  addNewItem(expenseAmount, description, category)
+  axios
+    .post(
+      'https://crudcrud.com/api/f83156651d0a4f1798662f32ef29db4e/expenses',
+      userDetails
+    )
+    .then((res) => {
+      addItemToDom(
+        res.data.expenseAmount,
+        res.data.description,
+        res.data.category
+      )
+      console.log(res)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  text1.value = ''
+  text2.value = ''
+  text3.value = ''
 }
 
 itemList.addEventListener('click', removeItem)
@@ -27,15 +42,23 @@ itemList.addEventListener('click', editItem)
 function editItem(e) {
   if (e.target.classList.contains('edit')) {
     const li = e.target.parentElement
-    // console.log(li.innerHTML)
-    const amount = li.innerHTML.split(' - ')[0].trim()
-    // console.log(amount)
     const desc = li.innerHTML.split(' - ')[2].split('<button')[0].trim()
     // console.log(desc)
-    deleteDetail(desc)
+    axios
+      .get('https://crudcrud.com/api/f83156651d0a4f1798662f32ef29db4e/expenses')
+      .then((res) => {
+        res.data.forEach((item) => {
+          if (item.description === desc) {
+            text1.value = item.expenseAmount
+            text2.value = item.description
+            text3.value = item.category
+            deleteDetail(item._id)
+          }
+        })
+      })
+      .catch((err) => console.log(err))
+
     itemList.removeChild(li)
-    text1.value = amount
-    text2.value = desc
   }
 }
 
@@ -43,24 +66,26 @@ function removeItem(e) {
   if (e.target.classList.contains('delete')) {
     const li = e.target.parentElement
     const desc = li.innerHTML.split(' - ')[2].split('<button')[0].trim()
-    deleteDetail(desc)
-    itemList.removeChild(li)
+    axios
+      .get('https://crudcrud.com/api/f83156651d0a4f1798662f32ef29db4e/expenses')
+      .then((res) => {
+        res.data.forEach((item) => {
+          if (item.description === desc) {
+            deleteDetail(item._id)
+            console.log(item._id)
+            itemList.removeChild(li)
+          }
+        })
+      })
+      .catch((err) => console.log(err))
   }
 }
 
-function addNewItem(expenseAmount, description, category) {
-  // for (var i = 0; i < localStorage.length; i++) {
-  //   const key = localStorage[i]
-  //   if (key === description) {
-  //     deleteDetail(description)
-  //     break
-  //   }
-  // }
-  retrieveData()
-}
-
-function deleteDetail(desc) {
-  localStorage.removeItem(desc)
+function deleteDetail(_id) {
+  // localStorage.removeItem(desc)
+  axios.delete(
+    `https://crudcrud.com/api/f83156651d0a4f1798662f32ef29db4e/expenses/${_id}`
+  )
 }
 
 function addItemToDom(expenseAmount1, description1, category1) {
@@ -93,17 +118,32 @@ function addItemToDom(expenseAmount1, description1, category1) {
   itemList.appendChild(li)
 }
 
-function retrieveData() {
+// retrieveData()
+// function retrieveData() {
+//   itemList.innerHTML = ''
+//   axios
+//     .get(
+//       'https://crudcrud.com/api/f83156651d0a4f1798662f32ef29db4e/expenses'
+//     )
+//     .then((res) => {
+//       fetchedData = res.data
+//       fetchedData.forEach((item) => {
+//         addItemToDom(item.expenseAmount, item.description, item.category)
+//       })
+//     })
+//     .catch((err) => console.log(err))
+// }
+
+// Also by window is loaded
+window.addEventListener('DOMContentLoaded', function () {
   itemList.innerHTML = ''
-  for (x in localStorage) {
-    // console.log(JSON.parse(localStorage.getItem(x)))
-    var tmp = JSON.parse(localStorage.getItem(x))
-    if (tmp) {
-      // console.log(tmp)
-      expenseAmount1 = tmp.expenseAmount
-      description1 = tmp.description
-      category1 = tmp.category
-      addItemToDom(expenseAmount1, description1, category1)
-    }
-  }
-}
+  axios
+    .get('https://crudcrud.com/api/f83156651d0a4f1798662f32ef29db4e/expenses')
+    .then((res) => {
+      const data = res.data
+      data.forEach((item) => {
+        addItemToDom(item.expenseAmount, item.description, item.category)
+      })
+    })
+    .catch((err) => console.log(err))
+})
