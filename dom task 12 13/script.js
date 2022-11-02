@@ -4,8 +4,6 @@ const text3 = document.getElementById('text3')
 const submit = document.getElementById('submit')
 const itemList = document.getElementById('items')
 
-retrieveData()
-
 submit.addEventListener('click', submitHandler)
 
 function submitHandler(e) {
@@ -98,16 +96,45 @@ function addItemToDom(name1, emailId1) {
   itemList.appendChild(li)
 }
 
+// retrieveData()
+
 function retrieveData() {
   itemList.innerHTML = ''
-  for (x in localStorage) {
-    // console.log(JSON.parse(localStorage.getItem(x)))
-    var tmp = JSON.parse(localStorage.getItem(x))
-    if (tmp) {
-      console.log(tmp)
-      name1 = tmp.name
-      emailId1 = tmp.emailId
-      addItemToDom(name1, emailId1)
-    }
-  }
+  // for (x in localStorage) {
+  //   // console.log(JSON.parse(localStorage.getItem(x)))
+  //   var tmp = JSON.parse(localStorage.getItem(x))
+  //   if (tmp) {
+  //     console.log(tmp)
+  //     name1 = tmp.name
+  //     emailId1 = tmp.emailId
+  //     addItemToDom(name1, emailId1)
+  //   }
+  // }
+  // axios
+  //   .get(
+  //     'https://crudcrud.com/api/cd5fb8e3f3a04894943d824d12293114/appointmentData'
+  //   )
+  //   .then((res) => {
+  //     const data = res.data
+  //     data.forEach((item) => {
+  //       addItemToDom(item.name, item.emailId)
+  //     })
+  //   })
+  //   .catch((err) => console.log(err))
 }
+
+// Also by window is loaded
+window.addEventListener('DOMContentLoaded', function () {
+  itemList.innerHTML = ''
+  axios
+    .get(
+      'https://crudcrud.com/api/cd5fb8e3f3a04894943d824d12293114/appointmentData'
+    )
+    .then((res) => {
+      const data = res.data
+      data.forEach((item) => {
+        addItemToDom(item.name, item.emailId)
+      })
+    })
+    .catch((err) => console.log(err))
+})
