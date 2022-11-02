@@ -50,8 +50,23 @@ function removeItem(e) {
   if (e.target.classList.contains('delete')) {
     const li = e.target.parentElement
     const delId = li.innerHTML.split(',')[1].split('<button')[0].trim()
-    deleteDetail(delId)
-    itemList.removeChild(li)
+    console.log(delId)
+    axios
+      .get(
+        'https://crudcrud.com/api/cd5fb8e3f3a04894943d824d12293114/appointmentData'
+      )
+      .then((res) => {
+        res.data.forEach((item) => {
+          if (item.emailId === delId) {
+            deleteDetail(item._id)
+            console.log(item._id)
+            itemList.removeChild(li)
+          }
+        })
+      })
+      .catch((err) => console.log(err))
+    // deleteDetail(_id)
+    // itemList.removeChild(li)
   }
 }
 
@@ -66,8 +81,11 @@ function removeItem(e) {
 //   retrieveData()
 // }
 
-function deleteDetail(emailId) {
-  localStorage.removeItem(emailId)
+function deleteDetail(_id) {
+  // localStorage.removeItem(emailId)
+  axios.delete(
+    `https://crudcrud.com/api/cd5fb8e3f3a04894943d824d12293114/appointmentData/${_id}`
+  )
 }
 
 function addItemToDom(name1, emailId1) {
@@ -98,30 +116,30 @@ function addItemToDom(name1, emailId1) {
 
 // retrieveData()
 
-function retrieveData() {
-  itemList.innerHTML = ''
-  // for (x in localStorage) {
-  //   // console.log(JSON.parse(localStorage.getItem(x)))
-  //   var tmp = JSON.parse(localStorage.getItem(x))
-  //   if (tmp) {
-  //     console.log(tmp)
-  //     name1 = tmp.name
-  //     emailId1 = tmp.emailId
-  //     addItemToDom(name1, emailId1)
-  //   }
-  // }
-  // axios
-  //   .get(
-  //     'https://crudcrud.com/api/cd5fb8e3f3a04894943d824d12293114/appointmentData'
-  //   )
-  //   .then((res) => {
-  //     const data = res.data
-  //     data.forEach((item) => {
-  //       addItemToDom(item.name, item.emailId)
-  //     })
-  //   })
-  //   .catch((err) => console.log(err))
-}
+// function retrieveData() {
+//   itemList.innerHTML = ''
+// for (x in localStorage) {
+//   // console.log(JSON.parse(localStorage.getItem(x)))
+//   var tmp = JSON.parse(localStorage.getItem(x))
+//   if (tmp) {
+//     console.log(tmp)
+//     name1 = tmp.name
+//     emailId1 = tmp.emailId
+//     addItemToDom(name1, emailId1)
+//   }
+// }
+//   axios
+//     .get(
+//       'https://crudcrud.com/api/cd5fb8e3f3a04894943d824d12293114/appointmentData'
+//     )
+//     .then((res) => {
+//       fetchedData = res.data
+//       fetchedData.forEach((item) => {
+//         addItemToDom(item.name, item.emailId)
+//       })
+//     })
+//     .catch((err) => console.log(err))
+// }
 
 // Also by window is loaded
 window.addEventListener('DOMContentLoaded', function () {
