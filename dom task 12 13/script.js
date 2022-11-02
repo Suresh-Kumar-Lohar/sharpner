@@ -1,5 +1,6 @@
 const text1 = document.getElementById('text1')
 const text2 = document.getElementById('text2')
+const text3 = document.getElementById('text3')
 const submit = document.getElementById('submit')
 const itemList = document.getElementById('items')
 
@@ -10,12 +11,26 @@ submit.addEventListener('click', submitHandler)
 function submitHandler(e) {
   const name = text1.value
   const emailId = text2.value
+  const phoneNo = text3.value
   userDetails = {
     name: name,
     emailId: emailId,
+    phoneNo: phoneNo,
   }
-  localStorage.setItem(`${emailId}`, JSON.stringify(userDetails))
-  addNewItem(name, emailId)
+  axios
+    .post(
+      'https://crudcrud.com/api/cd5fb8e3f3a04894943d824d12293114/appointmentData',
+      userDetails
+    )
+    .then((res) => {
+      addItemToDom(res.data.name, res.data.emailId)
+      console.log(res)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  // localStorage.setItem(`${emailId}`, JSON.stringify(userDetails))
+  // addNewItem(name, emailId)
 }
 
 itemList.addEventListener('click', removeItem)
@@ -42,16 +57,16 @@ function removeItem(e) {
   }
 }
 
-function addNewItem(name, emailId) {
-  for (var i = 0; i < localStorage.length; i++) {
-    const key = localStorage[i]
-    if (key === emailId) {
-      deleteDetail(emailId)
-      break
-    }
-  }
-  retrieveData()
-}
+// function addNewItem(name, emailId) {
+//   for (var i = 0; i < localStorage.length; i++) {
+//     const key = localStorage[i]
+//     if (key === emailId) {
+//       deleteDetail(emailId)
+//       break
+//     }
+//   }
+//   retrieveData()
+// }
 
 function deleteDetail(emailId) {
   localStorage.removeItem(emailId)
