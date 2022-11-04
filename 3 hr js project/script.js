@@ -6,7 +6,7 @@ const itemList = document.getElementById('items')
 
 submit.addEventListener('click', submitHandler)
 
-function submitHandler(e) {
+async function submitHandler(e) {
   const expenseAmount = text1.value
   const description = text2.value
   const category = text3.value
@@ -15,77 +15,85 @@ function submitHandler(e) {
     description: description,
     category: category,
   }
-  axios
-    .post(
-      'https://crudcrud.com/api/f83156651d0a4f1798662f32ef29db4e/expenses',
-      userDetails
-    )
-    .then((res) => {
+  try {
+    if (expenseAmount && description) {
+      const res = await axios.post(
+        'https://crudcrud.com/api/7e1b94409e8749538445f8fdb845dfeb/expenses',
+        userDetails
+      )
       addItemToDom(
         res.data.expenseAmount,
         res.data.description,
         res.data.category
       )
       console.log(res)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-  text1.value = ''
-  text2.value = ''
-  text3.value = ''
+      text1.value = ''
+      text2.value = ''
+      text3.value = ''
+    }
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 itemList.addEventListener('click', removeItem)
 itemList.addEventListener('click', editItem)
 
-function editItem(e) {
+async function editItem(e) {
   if (e.target.classList.contains('edit')) {
     const li = e.target.parentElement
     const desc = li.innerHTML.split(' - ')[2].split('<button')[0].trim()
     // console.log(desc)
-    axios
-      .get('https://crudcrud.com/api/f83156651d0a4f1798662f32ef29db4e/expenses')
-      .then((res) => {
-        res.data.forEach((item) => {
-          if (item.description === desc) {
-            text1.value = item.expenseAmount
-            text2.value = item.description
-            text3.value = item.category
-            deleteDetail(item._id)
-          }
-        })
+    try {
+      const res = await axios.get(
+        'https://crudcrud.com/api/7e1b94409e8749538445f8fdb845dfeb/expenses'
+      )
+      res.data.forEach((item) => {
+        if (item.description === desc) {
+          text1.value = item.expenseAmount
+          text2.value = item.description
+          text3.value = item.category
+          deleteDetail(item._id)
+        }
       })
-      .catch((err) => console.log(err))
+    } catch (error) {
+      console.log(error)
+    }
 
     itemList.removeChild(li)
   }
 }
 
-function removeItem(e) {
+async function removeItem(e) {
   if (e.target.classList.contains('delete')) {
     const li = e.target.parentElement
     const desc = li.innerHTML.split(' - ')[2].split('<button')[0].trim()
-    axios
-      .get('https://crudcrud.com/api/f83156651d0a4f1798662f32ef29db4e/expenses')
-      .then((res) => {
-        res.data.forEach((item) => {
-          if (item.description === desc) {
-            deleteDetail(item._id)
-            console.log(item._id)
-            itemList.removeChild(li)
-          }
-        })
+    try {
+      const res = await axios.get(
+        'https://crudcrud.com/api/7e1b94409e8749538445f8fdb845dfeb/expenses'
+      )
+      res.data.forEach((item) => {
+        if (item.description === desc) {
+          deleteDetail(item._id)
+          console.log(item._id)
+          itemList.removeChild(li)
+        }
       })
-      .catch((err) => console.log(err))
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
 
-function deleteDetail(_id) {
+async function deleteDetail(_id) {
   // localStorage.removeItem(desc)
-  axios.delete(
-    `https://crudcrud.com/api/f83156651d0a4f1798662f32ef29db4e/expenses/${_id}`
-  )
+  try {
+    await axios.delete(
+      `https://crudcrud.com/api/7e1b94409e8749538445f8fdb845dfeb/expenses/${_id}`
+    )
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 function addItemToDom(expenseAmount1, description1, category1) {
@@ -123,7 +131,7 @@ function addItemToDom(expenseAmount1, description1, category1) {
 //   itemList.innerHTML = ''
 //   axios
 //     .get(
-//       'https://crudcrud.com/api/f83156651d0a4f1798662f32ef29db4e/expenses'
+//       'https://crudcrud.com/api/7e1b94409e8749538445f8fdb845dfeb/expenses'
 //     )
 //     .then((res) => {
 //       fetchedData = res.data
@@ -135,15 +143,17 @@ function addItemToDom(expenseAmount1, description1, category1) {
 // }
 
 // Also by window is loaded
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener('DOMContentLoaded', async function () {
   itemList.innerHTML = ''
-  axios
-    .get('https://crudcrud.com/api/f83156651d0a4f1798662f32ef29db4e/expenses')
-    .then((res) => {
-      const data = res.data
-      data.forEach((item) => {
-        addItemToDom(item.expenseAmount, item.description, item.category)
-      })
+  try {
+    const res = await axios.get(
+      'https://crudcrud.com/api/7e1b94409e8749538445f8fdb845dfeb/expenses'
+    )
+    const data = res.data
+    data.forEach((item) => {
+      addItemToDom(item.expenseAmount, item.description, item.category)
     })
-    .catch((err) => console.log(err))
+  } catch (error) {
+    console.log(error)
+  }
 })
